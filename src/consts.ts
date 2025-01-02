@@ -5,7 +5,7 @@ export const SITE = {
   DESCRIPTION: 'A framework free Astro starter template.',
 
   BASE: '/',
-  URL: 'https://localhost/',
+  URL: 'https://astromorph.netlify.app/',
 
   LANG: 'en',
   LOCALE: 'en-GB',
