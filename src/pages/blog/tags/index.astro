@@ -1,0 +1,22 @@
+---
+import Base from '@src/layouts/Base.astro'
+import TagCloud from '@src/components/blog/TagCloud.astro'
+
+const title = 'Tags'
+const description = 'Listing of all blog tags.'
+---
+
+<Base {title} {description}>
+	<header slot="before-breadcrumbs"><h1>{title}</h1></header>
+  <TagCloud title={false} count />
+</Base>
+
+<style>
+  header {
+    padding: 16px 16px 0 16px;
+  }
+
+  header h1 {
+    margin: 0;
+  }
+</style>

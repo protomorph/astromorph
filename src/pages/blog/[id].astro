@@ -1,0 +1,47 @@
+---
+import { SITE } from '@src/consts'
+import { type CollectionEntry, render } from 'astro:content'
+import { getPosts, adjoiningPost, relatedPosts } from '@src/utils/blog'
+import Base from '@src/layouts/Base.astro'
+import Share from '@src/components/Share.astro'
+import BlogHero from '@src/components/blog/Hero.astro'
+import BlogLoop from '@src/components/blog/Loop.astro'
+import BlogPager from '@src/components/blog/Pager.astro'
+import BlogArticle from '@src/components/blog/Article.astro'
+
+export async function getStaticPaths () {
+	const posts = await getPosts()
+
+	return posts.map((post: CollectionEntry<'blog'>, i: number) => ({
+		params: { id: post.id },
+		props: {
+			post,
+			next: adjoiningPost(i + 1 !== posts.length ? posts[i + 1] : null),
+			prev: adjoiningPost(i !== 0 ? posts[i - 1] : null),
+			related: relatedPosts(post, posts, SITE.RELATED_POSTS)
+		},
+	}))
+}
+
+interface Props {
+	next: { href: string, title: string } | null
+	post: CollectionEntry<'blog'>
+	prev: { href: string, title: string } | null
+	related: CollectionEntry<'blog'>[]
+}
+
+const { next, post, prev, related } = Astro.props
+const { Content } = await render(post)
+const { body, data } = post
+const { description, heroImage: image, title } = data
+---
+
+<Base {title} {description} {image}>
+  <BlogHero src={image} slot="before-breadcrumbs" />
+  <BlogArticle {body} {...data}>
+    <Content />
+  </BlogArticle>
+  <Share {title} />
+	<BlogPager {next} {prev} />
+	<BlogLoop posts={related} title="Related Posts" />
+</Base>

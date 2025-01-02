@@ -1,0 +1,47 @@
+{
+  "name": "astromorph",
+  "description": "A framework free Astro blog starter template",
+  "author": "protomorph (https://github.com/protomorph/)",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "astro.config.ts",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/protomorph/astromorph.git"
+  },
+  "bugs": {
+    "url": "https://github.com/protomorph/astromorph/issues"
+  },
+  "keywords": [
+    "mdx",
+    "ssg",
+    "html",
+    "astro",
+    "markdown",
+    "typescript",
+    "static-site",
+    "astro-theme",
+    "astro-starter",
+    "astro-template"
+  ],
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/mdx": "^4.0.3",
+    "@astrojs/rss": "^4.0.10",
+    "@astrojs/sitemap": "^3.2.1",
+    "@shikijs/colorized-brackets": "^1.24.2",
+    "astro": "^5.1.1",
+    "astro-auto-import": "^0.4.4",
+    "satori": "^0.12.0",
+    "satori-html": "^0.3.2",
+    "sharp": "^0.33.5",
+    "typescript": "^5.7.2"
+  }
+}

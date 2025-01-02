@@ -1,0 +1,53 @@
+---
+import { SITE } from '@src/consts'
+import { getPosts } from '@src/utils/blog'
+import type { GetStaticPathsOptions } from 'astro'
+import Base from '@src/layouts/Base.astro'
+import BlogLoop from '@src/components/blog/Loop.astro'
+import Paginate from '@src/components/layout/Paginate.astro'
+
+export async function getStaticPaths (
+	{ paginate }: GetStaticPathsOptions
+) {
+  const posts = await getPosts()
+
+	return paginate(posts, {
+		pageSize: SITE.PER_PAGE
+	})
+}
+
+const { page } = Astro.props
+const posts = page.data
+const title = 'Blog'
+const description = 'All posts for my website.'
+---
+
+<Base {title} {description}>
+  <header slot="before-breadcrumbs"><h1>{title}</h1></header>
+  <h2>Page <b>{page.currentPage}</b> of <i>{page.lastPage}</i></h2>
+	<BlogLoop {posts} />
+	<Paginate {page} />
+</Base>
+
+<style>
+  header {
+    background-image: linear-gradient(.35turn in oklch, var(--secondary), var(--primary-dark));
+    color: var(--text-on-secondary);
+    padding: 24px 16px;
+  }
+
+  header h1 {
+    font-weight: 800;
+    margin: 0;
+  }
+
+  h2 b {
+    color: var(--text-mute);
+    font-weight: 800;
+  }
+
+  h2 i {
+    color: var(--text-mid);
+    font-weight: 600;
+  }
+</style>

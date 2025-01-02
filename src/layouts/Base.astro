@@ -1,0 +1,37 @@
+---
+import { SITE } from '@src/consts'
+import Head from '@src/components/layout/Head.astro'
+import Footer from '@src/components/layout/Footer.astro'
+import Skiplink from '@src/components/layout/Skiplink.astro'
+import Navigation from '@src/components/layout/Navigation.astro'
+import Breadcrumbs from '@src/components/layout/Breadcrumbs.astro'
+
+interface Props {
+	title: string
+	description: string
+	image?: string
+}
+
+const {
+  title,
+  description,
+  image = `assets/images/blog-placeholder-1.jpg`
+} = Astro.props
+---
+
+<!DOCTYPE html>
+<html data-js="false" lang={SITE.LANG}>
+  <head><Head {title} {description} {image} /></head>
+  <body>
+    <Skiplink text="Jump to Main Content" />
+    <Navigation />
+    <slot name="before-breadcrumbs" />
+    <Breadcrumbs {title} />
+    <slot name="before-main" />
+    <main id="main-content"><slot /></main>
+    <slot name="after-main" />
+    <Breadcrumbs {title} />
+    <Footer />
+    <Skiplink position-block="end" text="Back to Main Content" />
+  </body>
+</html>

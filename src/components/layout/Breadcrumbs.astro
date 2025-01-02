@@ -1,0 +1,103 @@
+---
+import { permalink } from '@src/utils/permalink'
+
+interface Props {
+  base?: string
+  separator?: string
+  title?: string
+}
+
+type CrumbItem = {
+  end: boolean
+  href: string
+  title: string
+}
+
+const titlecase = (txt: string) => txt.replace(
+  /\w\S*/g, (t) => t.charAt(0).toUpperCase() + t.substring(1).toLowerCase()
+)
+
+const { base = 'Home', separator = '&gt;', title } = Astro.props
+const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '')
+const segments = pathname.split('/').filter(Boolean)
+
+const crumbs = [base, ...segments].map((part, i) => ({
+  end: segments.length === i,
+  href: permalink.base(segments.slice(0, i).join('/')),
+  title: titlecase(part.replace(/[-_]/g, ' ')),
+})) as CrumbItem[]
+
+const home = crumbs.length === 1
+
+if (Number(crumbs.at(-1)!.title)) {
+  const c = crumbs.at(-2) as CrumbItem
+  c.title = title as string
+} else {
+  const c = crumbs.at(-1) as CrumbItem
+  c.title = title as string
+}
+---
+
+{! home && (<nav aria-labelledby="breadcrumb-label">
+  <h2 class="sr-only" id="breadcrumb-label">Breadcrumbs</h2>
+  <ol role="list">
+    {crumbs.map((crumb) => (
+      <li role="listitem">
+        <a href={crumb.href} aria-current={crumb.end ? 'page' : undefined}>{crumb.title}</a>
+        {! crumb.end && <span role="separator" set:html={separator} />}
+      </li>
+    ))}
+  </ol>
+</nav>)}
+
+<style>
+  nav {
+    inline-size: 100%;
+    margin: 0 auto;
+    max-inline-size: 840px;
+    padding: 16px 16px 0;
+  }
+
+  nav:has(+ footer) {
+    font-size: 87.5%;
+    padding: 0 16px 16px;
+  }
+
+  ol {
+    background-color: color-mix(in hsl, var(--primary) 6%, Canvas);
+    border-radius: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    margin: 0 auto;
+    padding: 12px 16px;
+  }
+
+  @media (width < 840px) {
+    nav:not(:has(+ footer)) ol {
+      border-radius: 0;
+      margin-inline: -16px;
+    }
+  }
+
+  li {
+    display: flex;
+    gap: 8px;
+  }
+
+  a {
+    color: var(--secondary);
+    line-height: 1.5rem;
+    text-decoration: none;
+  }
+
+  [aria-current="page"] {
+    color: var(--text-mid);
+  }
+
+  [role="separator"] {
+    color: var(--text-mute);
+    font-weight: 300;
+  }
+</style>

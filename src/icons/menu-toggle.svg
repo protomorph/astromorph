@@ -1,0 +1,16 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
+  <title>Toggle Menu</title>
+  <defs>
+    <style>
+      [href="#menu-icon-bar" i]{transform-origin:center;transition:transform 128ms cubic-bezier(.25,0,.3,1) 0ms,y 128ms cubic-bezier(.5,1.5,.75,1.25) 256ms}
+      :where(:has(~ :popover-open)) #menu-icon-start{transform:rotate(45deg);y:0;transition-delay:256ms,0ms}
+      :where(:has(~ :popover-open)) #menu-icon-center{transform:scale(0);transition-delay:0ms,0ms}
+      :where(:has(~ :popover-open)) #menu-icon-end{transform:rotate(-45deg);y:0;transition-delay:256ms,0ms}
+    </style>
+    <path d="M4 12h16" id="menu-icon-bar" stroke="currentColor" stroke-width="2px" stroke-linecap="round" />
+  </defs>
+  <use href="#menu-icon-bar" id="menu-icon-start" y="-5" />
+  <use href="#menu-icon-bar" id="menu-icon-center" y="0" />
+  <use href="#menu-icon-bar" id="menu-icon-end" y="5" />
+</svg>

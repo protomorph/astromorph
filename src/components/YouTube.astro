@@ -1,0 +1,182 @@
+---
+import { Image } from 'astro:assets'
+import type { HTMLAttributes } from 'astro/types'
+import YouTubeIcons from '@src/icons/youtube.svg'
+
+interface Props extends HTMLAttributes<'iframe'> {
+  'aspect-ratio'?: string
+  autoplay?: boolean
+  'border-radius'?: string
+  controls?: boolean
+  height?: number
+  loading?: 'eager' | 'lazy'
+  loop?: boolean
+  'max-width'?: string
+  mute?: boolean
+  nocookie?: boolean
+  rel?: boolean
+  thumbnail?: string
+  title?: string
+  url: string
+  width?: number
+}
+
+const {
+  'aspect-ratio': aspectRatio = '16 / 9',
+  autoplay = false,
+  'border-radius': borderRadius = '16px',
+  controls = true,
+  height = 315,
+  loading = 'lazy',
+  loop = false,
+  'max-width': maxWidth = '100%',
+  nocookie = false,
+  rel = true,
+  thumbnail,
+  title = 'YouTube Embeded Video',
+  url,
+  width = 560
+} = Astro.props
+
+const YT = /(?:https:\/\/(?:m\.|www\.)?(?:m\.)?youtu(?:be(?:\-nocookie)?\.com\/|\.be\/))/
+
+if (url.startsWith('https') && ! YT.test(url)) throw new Error(
+  `The url parameter is invalid: "${url}" was passed.\n
+  A valid YouTube video URL, video ID or playlist ID is required.`
+)
+
+const ID = /(?<=watch\?v=|embed\/|shorts\/|\/)([a-zA-Z0-9\-_]{11})|([a-zA-Z0-9\-_]{11})/
+const PLAYLIST = /(?<=list=)([a-zA-Z0-9\-_]{34})|([a-zA-Z0-9\-_]{34})/
+
+const [ id ] = url.match(ID) || []
+const [ playlist ] = url.match(PLAYLIST) || []
+
+if (id === undefined && playlist === undefined) throw new Error(
+  `The video ID or playlist ID is either invalid or missing.`
+)
+
+const params = new URL(
+  `https://www.youtube${
+    nocookie ? '-nocookie' : ''
+  }.com/embed/${
+    playlist ? 'videoseries' : id
+  }`
+)
+
+const search = params.searchParams
+
+if (playlist) search.set('list', playlist)
+search.set('autoplay', autoplay ? '1' : '0')
+search.set('controls', controls ? '1' : '0')
+search.set('loop', loop ? '1' : '0')
+search.set('rel', rel ? '1' : '0')
+
+const href = `https://www.youtube.com/watch?v=${id}`
+const src = params.toString()
+---
+
+<div class="youtube-player">
+  <a
+    {href}
+    data-id={id}
+    data-src={src}
+    data-title={title}
+    data-width={width}
+    data-height={height}
+  >
+    <Image
+      src={thumbnail || `https://i3.ytimg.com/vi/${id}/maxresdefault.jpg`}
+      height={720} width={1280} alt="" loading={loading}
+    />
+    <span class="sr-only">{title}</span>
+    <YouTubeIcons class="icon" height={64} width={64} />
+  </a>
+</div>
+
+<style define:vars={{
+  'aspect-ratio': aspectRatio,
+  'bd-radius': borderRadius,
+  'max-width': maxWidth,
+}}>
+  .youtube-player {
+    aspect-ratio: var(--aspect-ratio);
+    border-radius: var(--bd-radius);
+    display: inline-block;
+    max-inline-size: var(--max-width);
+    overflow: clip;
+    position: relative;
+  }
+
+  a {
+    color: currentColor;
+    display: flex;
+    place-content: center;
+    place-items: center;
+    position: relative;
+  }
+
+  a :is(img, picture) {
+    display: block;
+  }
+
+  .youtube-player :global(iframe) {
+    block-size: 100%;
+    border: 0;
+    border-radius: inherit;
+    inline-size: 100%;
+    inset: 0;
+    object-fit: cover;
+    object-position: 50% 50%;
+    position: absolute;
+    transition:
+      display 320ms ease-in-out allow-discrete,
+      opacity 320ms ease-in-out
+    ;
+  }
+
+  .youtube-player :global(iframe:is([hidden])) {
+    display: none;
+    opacity: 0;
+  }
+
+  .youtube-player :global(iframe:not([hidden])) {
+    display: block;
+    opacity: 1;
+  }
+
+  @starting-style {
+    .youtube-player :global(iframe:not([hidden])) {
+      opacity: 0;
+    }
+  }
+
+  .icon {
+    pointer-events: none;
+    position: absolute;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.youtube-player')?.forEach((player) => {
+    const iframe = document.createElement('iframe')
+    const a = player.querySelector<HTMLAnchorElement>('a')!
+    const src = a.dataset.src!
+
+    iframe.src = src
+    iframe.title = a.dataset.title!
+    iframe.hidden = true
+    iframe.setAttribute('allowfullscreen', '')
+    iframe.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture')
+
+    a.onclick = (e) => {
+      e.preventDefault()
+      player.append(iframe)
+      player.dataset.loading = 'true'
+      iframe.onload = () => {
+        delete player.dataset.loading
+        iframe.hidden = false
+        a.inert = true
+      }
+    }
+  })
+</script>

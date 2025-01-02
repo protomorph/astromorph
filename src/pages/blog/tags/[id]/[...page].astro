@@ -1,0 +1,77 @@
+---
+import { SITE } from '@src/consts'
+import { slug } from 'github-slugger'
+import { permalink } from '@src/utils/permalink'
+import type { CollectionEntry } from 'astro:content'
+import type { GetStaticPathsOptions, Page } from 'astro'
+import { type TaggedItem, getPosts } from '@src/utils/blog'
+import Base from '@src/layouts/Base.astro'
+import BlogLoop from '@src/components/blog/Loop.astro'
+import Paginate from '@src/components/layout/Paginate.astro'
+
+interface Props {
+  current: TaggedItem
+	page: Page<CollectionEntry<'blog'>>
+}
+
+export async function getStaticPaths (
+	{ paginate }: GetStaticPathsOptions
+) {
+  const posts = await getPosts()
+  const tags = [...new Set(posts.flatMap(
+    ({ data }) => data.tags || []
+  ).filter(Boolean))].map((tag: string) => ({
+    href: permalink.tags(slug(tag)),
+    name: tag,
+  }))
+
+  return tags.flatMap((tag) => paginate(posts.filter(
+    ({ data }) => data.tags.includes(tag.name)
+  ), {
+      params: { id: slug(tag.name) },
+      props: { current: tag, },
+      pageSize: SITE.PER_PAGE
+    }
+  ))
+}
+
+const { current, page } = Astro.props
+const posts = page.data
+const title = `Tagged: ${current.name}`
+const description = `Listing of all posts tagged with "${current.name}"`
+---
+
+<Base {title} {description}>
+  <header slot="before-breadcrumbs"><h1>{title}</h1></header>
+  <h2>Page <b>{page.currentPage}</b> of <i>{page.lastPage}</i></h2>
+	<BlogLoop {posts} />
+  <p><a href={permalink.base(SITE.ROUTES.TAGS)}>View All Tags</a></p>
+	<Paginate {page} />
+</Base>
+
+<style>
+  header {
+    background-image: linear-gradient(.35turn in oklch, var(--secondary-dark), var(--primary-dark));
+    color: var(--text-on-secondary-dark);
+    padding: 24px 16px;
+  }
+
+  header h1 {
+    font-weight: 800;
+    margin: 0;
+  }
+
+  h2 b {
+    color: var(--text-mute);
+    font-weight: 800;
+  }
+
+  h2 i {
+    color: var(--text-mid);
+    font-weight: 600;
+  }
+
+  p {
+    text-align: center;
+  }
+</style>

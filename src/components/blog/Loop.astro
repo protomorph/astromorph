@@ -1,0 +1,150 @@
+---
+import { SITE } from '@src/consts'
+import { Image } from 'astro:assets'
+import { readingTime } from '@src/utils/blog'
+import { permalink } from '@src/utils/permalink'
+import type { CollectionEntry } from 'astro:content'
+import BlogDate from '@src/components/blog/Date.astro'
+import BlogTags from '@src/components/blog/Tags.astro'
+
+interface Props {
+  link?: boolean
+	posts: CollectionEntry<'blog'>[]
+  title?: string
+}
+
+const { link, posts, title } = Astro.props
+---
+
+<section>
+  {title && <h2>{title}</h2>}
+  <ul role="list">
+    {posts.map(({ body, data, id }) => (
+      <li role="listitem" class:list={[
+        data.featured && 'featured',
+        data.draft && 'draft',
+      ]} {id}>
+        {data.heroImage && (
+          <Image
+            src={data.heroImage} height={630} width={1200}
+            alt="" loading={'lazy'} class="thumb"
+          />
+        )}
+        <div class="meta">
+          <h4 class="title">
+            <a class="link" href={permalink.blog(id)}>{data.title}</a>
+          </h4>
+          <p class="description">{data.description}</p>
+          <p class="date"><BlogDate date={data.pubDate} /></p>
+          {body && (<p class="reading">{readingTime(body)}</p>)}
+          {data.tagged && (<BlogTags tagged={data.tagged} />)}
+        </div>
+      </li>
+    ))}
+  </ul>
+  {link && (<p><a href={permalink.base(SITE.ROUTES.BLOG)}>View All Posts</a></p>)}
+</section>
+
+<style>
+  section {
+    container-type: inline-size;
+  }
+
+  section:not(:last-child) {
+    margin-block-end: 16px;
+  }
+
+  ul {
+    --loop-cols: 1;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(var(--loop-cols), 1fr);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @container (inline-size >= 64ch) {
+    ul { --loop-cols: 2; }
+  }
+
+  li {
+    background-color: color-mix(in hsl, var(--primary) 8%, Canvas);
+    border-radius: 16px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+
+  img {
+    border-radius: 16px;
+    display: block;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-rows: auto 1fr auto auto auto;
+    padding: 0 16px 16px 16px;
+    position: relative;
+  }
+
+  :where(.date, .description, .reading) {
+    margin: 0 0 8px 0;
+    text-align: center;
+  }
+
+  .title {
+    font-weight: 800;
+    margin: 0;
+  }
+
+  .link {
+    background-clip: text;
+    background-image: linear-gradient(90deg, var(--primary), var(--secondary));
+    background-position: var(--link-bg-pos, 0%) 0%;
+    background-size: 200% 100%;
+    color: transparent;
+    display: block;
+    padding-block: 12px 8px;
+    text-align: center;
+    transition: 256ms ease-in-out;
+  }
+
+  .link:where(:hover, :focus-visible) {
+    --link-bg-pos: 75%;
+  }
+
+  .link::after {
+    content: "";
+    grid-column: 1 / -1;
+    grid-row: 1 / 5;
+    inset-block: 0;
+    inset-inline: -16px;
+    position: absolute;
+  }
+
+  li:has(.link:focus-visible) {
+    outline: .15em solid var(--primary);
+    outline-offset: .25em;
+  }
+
+  .date {
+    color: var(--text-mid);
+    font-weight: 500;
+  }
+
+  .reading {
+    font-size: 82.5%;
+  }
+
+  section > p {
+    text-align: center;
+  }
+
+  section > p:last-child {
+    margin-block-end: 0;
+  }
+
+  section > ul + p {
+    margin-block-start: 16px;
+  }
+</style>

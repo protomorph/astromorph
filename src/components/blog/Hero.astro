@@ -1,0 +1,27 @@
+---
+import { Image } from 'astro:assets'
+
+interface Props {
+  src: string | undefined
+}
+
+const { src } = Astro.props
+---
+
+{src && (<Image
+  src={src} height={630} width={1200}
+  alt="" loading="eager" class="hero"
+/>)}
+
+<style>
+  .hero {
+    block-size: 100%;
+    display: block;
+    inline-size: calc(100% + 32px);
+    margin: 0;
+    max-block-size: 82.5dvh;
+    max-inline-size: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+  }
+</style>

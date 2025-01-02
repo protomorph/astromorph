@@ -1,0 +1,80 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+interface Props extends HTMLAttributes<'nav'> {
+  next: { href: string, title: string } | null
+  prev: { href: string, title: string } | null
+}
+
+const { prev, next, ...attrs } = Astro.props
+---
+
+<nav aria-labelledby="pager-label" {...attrs}>
+  <h2 class="sr-only" id="pager-label">Other Posts</h2>
+  <ul role="list">
+    {prev && (
+      <li role="listitem" class="prev">
+        <a href={prev.href}>
+          <span>Previous Post</span>
+          {prev.title && <span>{prev.title}</span>}
+        </a>
+      </li>
+    )}
+    {next && (
+      <li role="listitem" class="next">
+        <a href={next.href}>
+          <span>Next Post</span>
+          {next.title && <span>{next.title}</span>}
+        </a>
+      </li>
+    )}
+  </ul>
+</nav>
+
+<style>
+  nav:not(:last-child) {
+    margin-block-end: 16px;
+  }
+
+  ul {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .next {
+    grid-column: 2 / 3;
+  }
+
+  .prev {
+    grid-column: 1 / 2;
+  }
+
+  .next a {
+    align-items: end;
+  }
+
+  .prev a {
+    align-items: start;
+  }
+
+  nav a {
+    color: var(--text-mid);
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+  }
+
+  a > span:first-of-type {
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+
+  a > span:last-of-type {
+    color: var(--secondary);
+    font-size: .9125rem;
+  }
+</style>

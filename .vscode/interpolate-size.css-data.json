@@ -1,0 +1,20 @@
+
+{
+  "version": 1.1,
+  "properties": [
+    {
+      "status": "experimental",
+      "name": "interpolate-size",
+      "description": {
+        "kind": "markdown",
+        "value": "The `interpolate-size` CSS property allows you to enable animations and transitions between a <length-percentage> value and an intrinsic size value such as auto, fit-content, or max-content."
+      },
+      "references": [{
+        "name": "MDN reference",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/interpolate-size"
+      }],
+      "browsers": ["E129", "C129", "O115"],
+      "syntax": "allow-keywords | numeric-only"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+---
+import { SITE } from '@src/consts'
+
+const now = new Date()
+const year = now.getFullYear()
+const updated = new Intl.DateTimeFormat(SITE.LOCALE, {
+  dateStyle: 'medium',
+  timeStyle: 'long',
+  hourCycle: 'h23',
+  timeZone: SITE.TIMEZONE
+})
+---
+
+<footer>
+	<div>&copy; {year} <a href="/">{SITE.TITLE}</a>. All rights reserved.</div>
+  <div>Built with <a href="https://astro.build">{Astro.generator}</a></div>
+  <small>updated: <time datetime={now.toISOString()}>{updated.format(now)}</time></small>
+</footer>
+
+<style>
+  footer {
+    background-image: linear-gradient(0deg, color-mix(in hsl, var(--primary-dark) 16%, Canvas), transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 16px 24px 16px;
+  }
+
+  footer > :is(div, small) {
+    align-self: center;
+  }
+
+  footer > small {
+    color: var(--text-mute);
+    display: block;
+  }
+
+  footer :any-link {
+    color: var(--secondary);
+  }
+</style>

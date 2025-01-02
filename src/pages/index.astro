@@ -1,0 +1,66 @@
+---
+import { SITE } from '@src/consts'
+import { Code } from 'astro:components'
+import { getPosts } from '@src/utils/blog'
+import Base from '@src/layouts/Base.astro'
+import YouTube from '@src/components/YouTube.astro'
+import BlogLoop from '@src/components/blog/Loop.astro'
+import TagCloud from '@src/components/blog/TagCloud.astro'
+
+const latest = await getPosts(SITE.LATEST_POSTS)
+---
+
+<Base title={SITE.TITLE} description={SITE.DESCRIPTION}>
+  <header slot="before-breadcrumbs">
+    <h1>{SITE.TITLE}</h1>
+    <p>A framework free <a href="https://astro.build/">Astro</a> blog starter template.</p>
+    <Code code="npm create astro@latest -- --template protomorph/astromorph" lang="sh" theme="dracula" />
+  </header>
+  <p>
+    This starter template comes with a few integrations already configured in the
+    <code>astro.config.ts</code> file. Customize this starter further, with more
+    <a href="https://astro.build/integrations">Astro Integrations</a>.
+  </p>
+  <hr class="primary-secondary">
+  <YouTube url="https://youtu.be/tk1RWcasgxs" loading='eager' />
+  <hr class="primary-secondary">
+  <p>
+    Read the <a href="https://docs.astro.build/">Astro docs</a>
+    or join the <a href="https://astro.build/chat">Astro Discord</a> for more
+    about <a href="https://astro.build/">Astro</a>.
+  </p>
+  <hr class="secondary-primary">
+  <BlogLoop posts={latest} title="Latest Posts" link />
+  <TagCloud limit={12} title="Top Tags" />
+</Base>
+
+<style>
+  header {
+    background-image: linear-gradient(.35turn in oklch, var(--primary), var(--secondary));
+    color: var(--text-on-primary);
+    padding: 48px 16px;
+  }
+
+  header a {
+    color: var(--text-on-primary);
+    font-weight: 500;
+  }
+
+  header h1 {
+    font-weight: 800;
+  }
+
+  header p {
+    font-size: clamp(1.25rem, 1.2vw + .8rem, 1.625rem);
+    text-align: center;
+  }
+
+  header pre {
+    margin: 0;
+    max-inline-size: 100%;
+  }
+
+  header :where(h1, p, pre) {
+    justify-self: center;
+  }
+</style>

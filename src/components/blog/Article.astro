@@ -1,0 +1,139 @@
+---
+import { readingTime } from '@src/utils/blog'
+import BlogDate from '@src/components/blog/Date.astro'
+import BlogTags from '@src/components/blog/Tags.astro'
+
+interface Props {
+  body: string | undefined
+  title: string
+  description: string
+  draft: boolean
+  featured: boolean
+  pubDate: Date
+  heroImage?: string | undefined
+  tags: string[]
+  tagged?: {
+      href: string
+      name: string
+      count?: number | undefined
+  }[] | undefined
+  updatedDate?: Date | undefined
+}
+
+const {
+  body,
+  description,
+  pubDate,
+  tagged,
+  title,
+  updatedDate
+} = Astro.props
+---
+
+<article>
+  <h1 class="title">{title}</h1>
+  <p class="description">{description}</p>
+  <div class="date">
+    <BlogDate date={pubDate} />
+    {updatedDate && (
+      <div class="edit">last updated: <BlogDate date={updatedDate} /></div>
+    )}
+  </div>
+  {body && (<div class="reading">{readingTime(body)}</div>)}
+  {tagged && (<BlogTags {tagged} />)}
+  <hr class="separator" />
+  <section>
+    <div class="progress" aria-hidden="true"></div>
+    <slot />
+  </section>
+</article>
+
+<style>
+  :root {
+    scroll-timeline: --article-timeline;
+    timeline-scope: --article-timeline;
+  }
+
+  article {
+    background-color: color-mix(in hsl, var(--primary) 8%, Canvas);
+    border-radius: 16px;
+    margin-block-end: 16px;
+    padding: 16px;
+  }
+
+  article > section {
+    view-timeline: --article-timeline;
+  }
+
+  .progress {
+    inset: 0 0 auto 0;
+    pointer-events: none;
+    position: fixed;
+    z-index: 110;
+  }
+
+  .progress::after {
+    animation: article-progress linear forwards;
+    animation-timeline: --article-timeline;
+    animation-range: entry 15% exit 85%;
+    background-image: linear-gradient(90deg in oklch, var(--secondary) 70%, var(--primary) 100%);
+    block-size: 2px;
+    content: "";
+    display: block;
+    scale: 0 1;
+    transform-origin: 0 0;
+  }
+
+  @keyframes article-progress {
+    100% { scale: 1 1; }
+  }
+
+  :where(.date, .description, .reading, .title) {
+    text-align: center;
+  }
+
+  .title {
+    margin: 0 0 .5em 0;
+  }
+
+  .description {
+    font-size: 1.25rem;
+  }
+
+  .date, .reading {
+    margin-block-end: 16px;
+  }
+
+  .date > :global(time) {
+    color: var(--text-mid);
+  }
+
+  .date > .edit {
+    color: var(--text-mute);
+    font-size: 87.5%;
+  }
+
+  .tags {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .tags a {
+    background-color: var(--primary);
+    border-radius: 24px;
+    color: var(--text-on-primary);
+    font-weight: 600;
+    padding: 4px 12px;
+    text-decoration: none;
+  }
+
+  .tags a:focus-visible {
+    outline: .15em solid var(--primary);
+    outline-offset: .25em;
+  }
+
+  .separator {
+    margin-block: 20px;
+  }
+</style>

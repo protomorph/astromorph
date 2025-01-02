@@ -1,0 +1,39 @@
+---
+import DarkLightIcon from '@src/icons/dark-light.svg'
+---
+
+<button data-toggle="shceme">
+  <DarkLightIcon class="scheme-icon" height={24} width={24} />
+  <span class="sr-only">Toggle dark/light mode</span>
+</button>
+
+<style>
+  [data-toggle="shceme"] {
+    background: none;
+    border: 0;
+    color: var(--text);
+    cursor: pointer;
+    padding: 8px;
+    place-items: center;
+  }
+
+  svg {
+    display: block;
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-toggle="shceme"]')!
+  const html = document.documentElement
+  const dark = localStorage.getItem('scheme')
+    ? localStorage.getItem('scheme') === 'dark'
+    : window.matchMedia('(prefers-color-scheme: dark)').matches
+
+  html.dataset.scheme = dark ? 'dark' : 'light'
+
+  toggle.onclick = () => {
+    const scheme = html.dataset.scheme === 'dark' ? 'light' : 'dark'
+    localStorage.setItem('scheme', scheme)
+    html.dataset.scheme = scheme
+  }
+</script>

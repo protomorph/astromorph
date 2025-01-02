@@ -1,0 +1,173 @@
+---
+import { SITE, NAVIGATION } from '@src/consts'
+import { permalink } from '@src/utils/permalink'
+import LogoIcon from '@src/icons/astro.svg'
+import MenuIcon from '@src/icons/menu-toggle.svg'
+import Darkmode from '@src/components/layout/Darkmode.astro'
+
+const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '')
+
+function active (href: string) {
+  href = href.replace(/^\/|\/$/g, '')
+  const path = pathname.replace(/^\/|\/$/g, '')
+  const subpath = path.match(/[^\/]+/g)?.[0] || ''
+  return href === path || href === subpath
+}
+---
+
+<nav id="main-layout-nav">
+  <a href={permalink.base('')}>
+    <LogoIcon class="logo" height={24} width={24} />
+    <span class="sr-only">{SITE.TITLE}</span>
+  </a>
+
+  <button popovertarget="main-nav-menu">
+    <MenuIcon height={24} width={24} />
+    <span class="sr-only">Toggle navigation</span>
+  </button>
+
+  <section id="main-nav-menu" popover>
+    {NAVIGATION.map(({ external, href, title }) => (
+      <a href={external ? href : permalink.base(href)} class:list={[
+        { active: active(href) }
+      ]}>{title}</a>
+    ))}
+  </section>
+
+  <Darkmode />
+</nav>
+
+<style>
+  nav {
+    align-items: center;
+    anchor-name: --main-nav-menu;
+    background-color: color-mix(in hsl, var(--primary) 16%, Canvas);
+    container-type: inline-size;
+    display: flex;
+    inset-block-start: 0;
+    inset-inline: 0;
+    padding: 8px;
+    position: sticky;
+    z-index: 100;
+  }
+
+  a:not(.active), a.active {
+    color: var(--text);
+    display: block;
+    font-weight: 600;
+    padding: 8px;
+    position: relative;
+    text-decoration: none;
+  }
+
+  a::before {
+    background-image: linear-gradient(
+      var(--dir, 90deg),
+      var(--secondary) 60%,
+      var(--primary)
+    );
+    border-radius: .15em;
+    content: "";
+    position: absolute;
+  }
+
+  [popovertarget="main-nav-menu"] {
+    background: none;
+    border: 0;
+    color: var(--text);
+    cursor: pointer;
+    margin-inline-start: auto;
+    padding: 8px;
+    place-items: center;
+  }
+
+  @container (inline-size < 860px) {
+    [popovertarget="main-nav-menu"] {
+      display: flex;
+    }
+  }
+
+  @container (inline-size >= 860px) {
+    [popovertarget="main-nav-menu"] {
+      display: none;
+    }
+  }
+
+  section {
+    background: inherit;
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  @container (inline-size < 860px) {
+    [popover] {
+      inline-size: 100%;
+      inset-block-start: calc(anchor(end) - 4px);
+      inset-inline-start: anchor(start);
+      padding: 4px 8px 8px 8px;
+      position-anchor: --main-nav-menu;
+      position-area: end span-end;
+      position-try: flip-inline;
+      position-try-fallbacks: flip-inline;
+      position-visibility: anchors-visible;
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      transition:
+        display 256ms cubic-bezier(.25, 0, .3, 1) 0ms allow-discrete,
+        overlay 256ms cubic-bezier(.25, 0, .3, 1) 0ms allow-discrete,
+        opacity 256ms cubic-bezier(.25, 0, .3, 1) 0ms
+      ;
+    }
+
+    [popover]:not(:popover-open) {
+      opacity: 0;
+    }
+
+    [popover]:is(:popover-open) {
+      opacity: 1;
+    }
+
+    @starting-style {
+      [popover]:is(:popover-open) {
+        opacity: 0;
+      }
+    }
+
+    a.active::before {
+      --dir: 0deg;
+      inline-size: .15em;
+      inset-block: 0;
+      inset-inline-start: -4px;
+    }
+  }
+
+  @container (inline-size > 860px) {
+    section:is([popover]) {
+      display: flex;
+      margin-inline-start: auto;
+      overflow: initial;
+      position: relative;
+    }
+
+    a.active::before {
+      block-size: .15em;
+      inset-block-end: 0;
+      inset-inline: 0;
+    }
+  }
+
+  :where(a, button):focus-visible {
+    outline: .15em solid currentColor;
+    outline-offset: -.15em;
+  }
+
+  svg {
+    display: block;
+  }
+
+  .logo {
+    inset-block-start: 3px;
+    position: relative;
+  }
+</style>

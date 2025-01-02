@@ -1,0 +1,16 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": ".",
+    "module": "ESNext",
+    "paths": {
+      "@src/*": ["src/*"]
+    },
+    "strictNullChecks": true,
+    "target": "ESNext",
+    "types": ["astro/client"]
+  }
+}
