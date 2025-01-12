@@ -1,13 +1,37 @@
 ---
 import type { Page } from 'astro'
 import type { HTMLAttributes } from 'astro/types'
-import type { CollectionEntry } from 'astro:content'
 
 interface Props extends HTMLAttributes<'nav'> {
-	page: Page<CollectionEntry<'blog'>>
+  count?: number
+	page: Page<any>
 }
 
-const { page, ...attrs } = Astro.props
+const { page, count = 5, ...attrs } = Astro.props
+
+let first = 1, last = page.lastPage
+
+const half = Math.floor(count / 2)
+const margin = page.lastPage - page.currentPage
+
+if (page.currentPage <= half) {
+  if (page.lastPage > count)
+    last = count
+} else if (margin <= half) {
+  first = Math.max(page.lastPage - count + 1, first)
+} else {
+  first = Math.max(page.currentPage - half, first)
+  last = Math.min(page.currentPage + half, last)
+}
+
+let numbers = Array.from({
+  length: last - first + 1
+}, (_, i) => first + i)
+
+const firstInRange = numbers[0] > 2
+const lastInRange = numbers.at(-1)! < page.lastPage - 1
+
+const base = page.url.first ?? page.url.current
 ---
 
 <nav aria-labelledby="pagination-label pagination-page" {...attrs}>
@@ -21,11 +45,25 @@ const { page, ...attrs } = Astro.props
         </a>
       </li>
     )}
-    <li class="pagination__current" role="listitem">
-      <span id="pagination-page" aria-current="page">
-        Page <b>{page.currentPage}</b> of <i>{page.lastPage}</i>
-      </span>
-    </li>
+    {firstInRange && (
+      <li class="pagination__page" role="listitem">
+        <a href={page.url.first}>1</a>
+      </li>
+    )}
+    {numbers.map((n) => (
+      <li class="pagination__page" role="listitem">
+        {page.currentPage === n ? (
+          <span aria-current="page" aria-labelledby="pagination-page">{n}</span>
+        ) : (
+          <a href={base + (n !== 1 ? `/${n}` : '')}>{n}</a>
+        )}
+      </li>
+    ))}
+    {lastInRange && (
+      <li class="pagination__page" role="listitem">
+        <a href={page.url.last}>{page.lastPage}</a>
+      </li>
+    )}
     {page.url.next && (
       <li class="pagination__next" role="listitem">
         <a href={page.url.next}>
@@ -35,6 +73,11 @@ const { page, ...attrs } = Astro.props
       </li>
     )}
   </ul>
+  <div class="pagination__current">
+    <span id="pagination-page">
+      Page <b>{page.currentPage}</b> of <i>{page.lastPage}</i>
+    </span>
+  </div>
 </nav>
 
 <style>
@@ -43,44 +86,86 @@ const { page, ...attrs } = Astro.props
   }
 
   ul {
-    display: grid;
+    display: flex;
     gap: 16px;
-    grid-template-columns: 1fr auto 1fr;
+    line-height: 20px;
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 88px;
+    place-content: center;
+    position: relative;
+    text-align: center;
+  }
+
+  li {
+    display: inline-block;
   }
 
   .pagination__prev {
-    grid-column: 1 / 2;
+    inset-inline-start: 0;
     text-align: start;
   }
 
   .pagination__current {
-    align-self: center;
-    grid-column: 2 / 3;
+    margin-block-start: 16px;
     text-align: center;
   }
 
   .pagination__next {
-    grid-column: 3 / 4;
+    inset-inline-end: 0;
     text-align: end;
   }
 
-  nav a {
+  :is([class*="next"], [class*="prev"]) {
+    position: absolute;
+  }
+
+  :is([class*="next"], [class*="prev"]) a {
     color: var(--text-mid);
     display: flex;
     flex-direction: column;
     text-decoration: none;
   }
 
-  a > span:first-of-type {
-    font-size: 1.125rem;
+  :is([class*="next"], [class*="prev"]) a > span:first-of-type {
+    font-size: 1rem;
     font-weight: 700;
   }
 
-  a > span:last-of-type {
+  :is([class*="next"], [class*="prev"]) a > span:last-of-type {
     color: var(--secondary);
     font-size: .9125rem;
+  }
+
+  .pagination__page:nth-child(1 of .pagination__page) {
+    margin-inline-start: auto;
+  }
+
+  .pagination__page:nth-last-child(1 of .pagination__page) {
+    margin-inline-end: auto;
+  }
+
+  .pagination__page :is(a, span) {
+    border-radius: 8px;
+    display: block;
+    margin-block-start: 2px;
+    min-inline-size: 32px;
+    padding: 6px;
+    text-align: center;
+  }
+
+  .pagination__page a {
+    background-color: var(--secondary);
+    color: var(--text-on-secondary);
+    text-decoration: none;
+  }
+
+  .pagination__page a:focus-visible {
+    outline-color: var(--secondary);
+  }
+
+  .pagination__page span {
+    background-color: color-mix(in hsl, var(--secondary) 16%, Canvas);
+    color: var(--text-mute);
   }
 </style>
