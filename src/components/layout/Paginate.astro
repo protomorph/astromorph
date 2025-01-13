@@ -30,8 +30,7 @@ let numbers = Array.from({
 
 const firstInRange = numbers[0] > 2
 const lastInRange = numbers.at(-1)! < page.lastPage - 1
-
-const base = page.url.first ?? page.url.current
+const base = page.url.current.replace(/[\/\d]+$/, '')
 ---
 
 <nav aria-labelledby="pagination-label pagination-page" {...attrs}>
