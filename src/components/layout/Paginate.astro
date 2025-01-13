@@ -15,8 +15,7 @@ const half = Math.floor(count / 2)
 const margin = page.lastPage - page.currentPage
 
 if (page.currentPage <= half) {
-  if (page.lastPage > count)
-    last = count
+  last = page.lastPage > count ? count : last
 } else if (margin <= half) {
   first = Math.max(page.lastPage - count + 1, first)
 } else {
