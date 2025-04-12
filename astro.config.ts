@@ -36,6 +36,6 @@ export default defineConfig({
     },
   },
   experimental: {
-    svg: { mode: 'inline' },
+    svg: true,
   }
 })
