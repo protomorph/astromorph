@@ -41,7 +41,7 @@
     "astro-auto-import": "^0.4.4",
     "satori": "^0.12.2",
     "satori-html": "^0.3.2",
-    "sharp": "^0.34.0",
+    "sharp": "^0.34.1",
     "typescript": "^5.8.3"
   }
 }
