@@ -42,6 +42,6 @@
     "satori": "^0.15.2",
     "satori-html": "^0.3.2",
     "sharp": "^0.34.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   }
 }
