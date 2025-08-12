@@ -39,7 +39,7 @@
     "@shikijs/colorized-brackets": "^3.8.0",
     "astro": "^5.12.9",
     "astro-auto-import": "^0.4.4",
-    "satori": "^0.15.2",
+    "satori": "^0.16.2",
     "satori-html": "^0.3.2",
     "sharp": "^0.34.3",
     "typescript": "^5.9.2"
