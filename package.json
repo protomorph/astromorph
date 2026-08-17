@@ -37,7 +37,7 @@
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "@shikijs/colorized-brackets": "^4.0.2",
-    "astro": "^5.18.1",
+    "astro": "^7.2.2",
     "astro-auto-import": "^0.5.2",
     "satori": "^0.29.0",
     "satori-html": "^0.3.2",
